@@ -1,0 +1,318 @@
+{
+  "purpose": "Completion осей исполнения: закрыть дыры, которых нет в V01–V09",
+  "covered_before": {
+    "F_EX_chain_full_v1_v2_delta": [
+      "V01",
+      "V02",
+      "V08"
+    ],
+    "P3_two_prices_one_row": [
+      "V03",
+      "01_ТехСнаб"
+    ],
+    "P1_hidden_live_row": [
+      "V04",
+      "01_ТехСнаб"
+    ],
+    "P4_second_island": [
+      "V05",
+      "02_HONGXING",
+      "03_Мега"
+    ],
+    "P2_neg_price": [
+      "V06",
+      "01_ТехСнаб"
+    ],
+    "P5_empty_price": [
+      "V06",
+      "01_ТехСнаб"
+    ],
+    "C1_dup_sku": [
+      "V06",
+      "01_ТехСнаб"
+    ],
+    "C5_total_formula": [
+      "V06",
+      "01_ТехСнаб"
+    ],
+    "C8_empty_article_and_name": [
+      "V06"
+    ],
+    "G4_tdsheet_false_friend": [
+      "V07",
+      "ASVAO vs ASVAO3"
+    ],
+    "C3_two_packings": [
+      "V09",
+      "03_Мега CB-419"
+    ],
+    "L9_sci_barcode_int_sku": [
+      "V06",
+      "02_HONGXING"
+    ],
+    "autofilter_on_empty": [
+      "V07",
+      "ASVAO3",
+      "03_Мега"
+    ],
+    "hidden_cost_col_P6": [
+      "01_ТехСнаб G"
+    ],
+    "letterhead_header_not_row1": [
+      "01_ТехСнаб",
+      "V04",
+      "V07"
+    ],
+    "currency_in_header_not_column": [
+      "ASVAO E1",
+      "V01 footer"
+    ]
+  },
+  "new_files": [
+    {
+      "id": "V10",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V10_native_Excel_Table.xlsx",
+      "basename": "V10_native_Excel_Table.xlsx",
+      "axis": "DetectLayout native Table (Ctrl+T) выше эвристики шапки",
+      "quotes": {
+        "table": "PriceTable A1:E6",
+        "A2": "NT-01"
+      },
+      "expected_items": 5,
+      "forces": [
+        "DetectLayout source=native_table"
+      ]
+    },
+    {
+      "id": "V11",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V11_вертикальная_шапка.xlsx",
+      "basename": "V11_вертикальная_шапка.xlsx",
+      "axis": "DetectLayout vertical (заголовки в колонке A, позиции = колонки)",
+      "quotes": {
+        "A1": "Артикул",
+        "B1": "VT-01",
+        "E1": "VT-04"
+      },
+      "expected_items": 4,
+      "forces": [
+        "vertical layout",
+        "не читать как 5 строк-позиций"
+      ],
+      "wrong_if": "parser treats each row as an item → 5 garbage items"
+    },
+    {
+      "id": "V12",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V12_кросстаб_бренды_колонками.xlsx",
+      "basename": "V12_кросстаб_бренды_колонками.xlsx",
+      "axis": "crosstab brand×price — отдельная семья layout, не P3",
+      "quotes": {
+        "C1": "Makita",
+        "C2": 180,
+        "E2": null,
+        "A2": "CX-SH"
+      },
+      "expected_items": {
+        "unpivot_nonnull_prices": 8,
+        "wrong_one_price_col": "4 items with brand lost"
+      },
+      "forces": [
+        "unpivot",
+        "plugin likely",
+        "не путать с P3"
+      ]
+    },
+    {
+      "id": "V13",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V13_три_валидных_листа.xlsx",
+      "basename": "V13_три_валидных_листа.xlsx",
+      "axis": "N валидных прайсов в одном workbook (не мусорный Лист1)",
+      "quotes": {
+        "Makita!A2": "MS-01",
+        "Bosch!A2": "BS-01",
+        "Прочее!A2": "OT-01"
+      },
+      "expected_items": {
+        "parse_all_sheets": 8,
+        "only_active": 3,
+        "quarantine_if_policy_one_sheet": "file or 3 master cards"
+      },
+      "forces": [
+        "workbook-level P4 analogue",
+        "3 detect hits same fingerprint F_EX-like"
+      ]
+    },
+    {
+      "id": "V14",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V14_только_шапка_0_позиций.xlsx",
+      "basename": "V14_только_шапка_0_позиций.xlsx",
+      "axis": "0 data rows → quarantine FILE not success empty warehouse",
+      "quotes": {
+        "A1": "Артикул",
+        "data": "none"
+      },
+      "expected_items": 0,
+      "file_status": "quarantine_zero_rows",
+      "forces": [
+        "G7 0 rows",
+        "не current_shipment от пустого успеха"
+      ]
+    },
+    {
+      "id": "V15",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V15_короткие_неоднозначные_заголовки.xlsx",
+      "basename": "V15_короткие_неоднозначные_заголовки.xlsx",
+      "axis": "MapColumns ambiguous → master + слот микро-LLM, не silent map",
+      "quotes": {
+        "A1": "Код",
+        "D1": "Ст",
+        "E1": "Пр",
+        "F1": "К",
+        "A2": "AM-01",
+        "D2": 180,
+        "E2": 270
+      },
+      "expected": "unknown/ambiguous fingerprint, 0 autonomy clicks forbidden",
+      "forces": [
+        "G10 unknown card",
+        "LLM slot input=headers+3 rows",
+        "P3 maybe Ст/Пр"
+      ]
+    },
+    {
+      "id": "V16",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V16_три_валюты_колонками.xlsx",
+      "basename": "V16_три_валюты_колонками.xlsx",
+      "axis": "multi-currency columns ≠ P3 price_type",
+      "quotes": {
+        "C1": "Цена RUB",
+        "D1": "Цена USD",
+        "E1": "Цена EUR",
+        "D5": null
+      },
+      "expected_items": {
+        "one_item_extra_fx": 4,
+        "N_items_per_currency": 11
+      },
+      "forces": [
+        "нужна политика P8 currency-columns",
+        "не смешивать с P3"
+      ]
+    },
+    {
+      "id": "V17",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V17_merge_артикул_на_три_размера.xlsx",
+      "basename": "V17_merge_артикул_на_три_размера.xlsx",
+      "axis": "merged_fill вниз: 1 артикул × 3 размера = 3 items (не 1)",
+      "quotes": {
+        "A2:A4": "MB-BRUSH",
+        "B2": "6.5x7.5",
+        "B4": "7x11",
+        "A5": "MB-ARM"
+      },
+      "expected_items": {
+        "with_merged_fill": 4,
+        "without_fill": "1 or 2 (B3/B4 orphan) — bug"
+      },
+      "forces": [
+        "merged_fill convention from prototype OK",
+        "DetectLayout merge in probe pass"
+      ]
+    },
+    {
+      "id": "V18",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V18_named_range_PriceData.xlsx",
+      "basename": "V18_named_range_PriceData.xlsx",
+      "axis": "DetectLayout named_range выше скоринга шапки",
+      "quotes": {
+        "defined_name": "PriceData A4:E8",
+        "A4": "Артикул",
+        "A5": "NR-01"
+      },
+      "expected_items": 4,
+      "forces": [
+        "named range priority"
+      ]
+    },
+    {
+      "id": "V21",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V21_комбо_P1_скрытая_×_P3_две_цены.xlsx",
+      "basename": "V21_комбо_P1_скрытая_×_P3_две_цены.xlsx",
+      "axis": "комбо P1×P3 — counts перемножаются, не складываются от отдельных файлов",
+      "quotes": {
+        "A2": "XP-01",
+        "C2": 180,
+        "D2": 270,
+        "hidden": "A3='XP-HIDDEN'"
+      },
+      "notes": {
+        "hidden_row": 3
+      },
+      "expected_items": {
+        "P1_include_P3_N_items": 8,
+        "P1_include_P3_extra_prices": 4,
+        "P1_skip_P3_N_items": 6,
+        "P1_skip_P3_extra_prices": 3
+      },
+      "forces": [
+        "матрица P* не независима",
+        "G2 combo"
+      ]
+    }
+  ],
+  "still_open_not_xlsx_or_deferred": [
+    {
+      "axis": "P8 currency-columns",
+      "why": "открыт V16, политика не выбрана"
+    },
+    {
+      "axis": "pivot left+top header (двумерная шапка чисел)",
+      "why": "V12 упрощённый кросстаб; полный pivot с итогами — plugin"
+    },
+    {
+      "axis": ".xls BIFF / .xlsb / HTML-xls / XML Spreadsheet 2003",
+      "why": "не xlsx; FileNormalize, отдельный конверт"
+    },
+    {
+      "axis": "csv cp1251 ; delimiter",
+      "why": "не Excel layout"
+    },
+    {
+      "axis": "password-encrypted workbook",
+      "why": "не sheet protection; карантин файла"
+    },
+    {
+      "axis": "macro xlsm execute",
+      "why": "запрет исполнять, только данные"
+    },
+    {
+      "axis": "matching OEM vs supplier sku across sources",
+      "why": "слот фазы 3, не ingest"
+    },
+    {
+      "axis": "P3×P4 combo file",
+      "why": "можно догенерить позже; логика = произведение политик"
+    },
+    {
+      "axis": "same fingerprint synonym rename Цена→Прайс",
+      "why": "fingerprint miss → master, не V_profile"
+    },
+    {
+      "axis": "winmail.dat / zip кириллица / file без расширения",
+      "why": "MailIngest/FileNormalize, не xlsx-фикстура"
+    },
+    {
+      "axis": "300k rows RAM",
+      "why": "генератор отдельный, не класть в git"
+    },
+    {
+      "axis": "formula article ='EX'&row",
+      "why": "нужен recalc LibreOffice — отдельный G9"
+    }
+  ],
+  "new_policies_to_add_to_prompt": [
+    "P8: несколько колонок валют → N items с currency XOR extra.fx[] (не путать с P3)",
+    "P9: несколько валидных листов → parse all XOR first XOR master-per-sheet",
+    "P10: кросстаб/unpivot → plugin, не YAML",
+    "P11: 0 data rows → quarantine file, не пустой success shipment"
+  ]
+}

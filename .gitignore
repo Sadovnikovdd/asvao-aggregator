@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Локальные данные и черновые копии (не входят в репозиторий)
+.aggregator-data/
+data/
+data2/
+asvao2/
+
+# Реальные прайсы поставщиков — чувствительные данные, не входят в репозиторий
+/ASVAO.xlsx
+/ASVAO3.xlsx
+/ASVAO_прайс.xlsx
+
+# Дубли фикстур в корне — каноничные копии лежат в variants/
+/V0*.xlsx
+
+# Системные
+.DS_Store
+
+# Настройки OMP: в репозиторий входит только lsp.json
+/.omp/*
+!/.omp/lsp.json

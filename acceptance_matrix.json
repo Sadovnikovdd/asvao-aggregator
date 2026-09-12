@@ -1,0 +1,645 @@
+{
+  "status_policy": "not_run means no tests executed; policy-dependent scenarios are not green without explicit policy",
+  "mail_policy": "mail scenarios remain not_run until adapter exists",
+  "items": [
+    {
+      "id": "G1.1",
+      "input": "ASVAO.xlsx; max_row 7878",
+      "expected": "7874 items accepted; 7878 is not used as count",
+      "bug": "using max_row 7878",
+      "status": "passed",
+      "evidence": "test_G1_G4_full_upload_and_replay: approve ASVAO → counts.items == 7874; max_row не используется",
+      "scope": "local"
+    },
+    {
+      "id": "G1.2",
+      "input": "text B5+06503163",
+      "expected": "text identifier preserved and parsed",
+      "bug": "text identifier loss",
+      "status": "passed",
+      "evidence": "test_G1_G4: каталог q=06503163 → article \"06503163\", ведущий ноль и текст сохранены",
+      "scope": "local"
+    },
+    {
+      "id": "G1.3",
+      "input": "empty brand; currency E1 rub",
+      "expected": "empty brand valid; RUB currency recognized",
+      "bug": "empty brand or currency rejection",
+      "status": "passed",
+      "evidence": "test_G1_ASVAO_values_counts: 7874 позиций, все currency RUB; 10 строк с пустым брендом приняты",
+      "scope": "local"
+    },
+    {
+      "id": "G1.4",
+      "input": "ASVAO3 with 36 B..G size extras",
+      "expected": "36 rows and B..G size fields handled",
+      "bug": "size-column/row truncation",
+      "status": "passed",
+      "evidence": "test_G1_G4: ASVAO3 → 36 позиций, размеры B..G в extra",
+      "scope": "local"
+    },
+    {
+      "id": "G1.5",
+      "input": "row 7 empty",
+      "expected": "empty row 7 is not data/header",
+      "bug": "empty row promoted as header",
+      "status": "passed",
+      "evidence": "test_G1_G4: ASVAO3 шапка 4–6, данные с 8; пустая строка 7 не шапка и не данные",
+      "scope": "local"
+    },
+    {
+      "id": "G1.6",
+      "input": "repeat exact SHA; no UI click",
+      "expected": "no new items",
+      "bug": "repeat import non-idempotent",
+      "status": "passed",
+      "evidence": "test_G1_G4: повторная загрузка ASVAO → replay, shipments == 1",
+      "scope": "local"
+    },
+    {
+      "id": "G1.7",
+      "input": "profile A on B miss",
+      "expected": "profile A does not match workbook B",
+      "bug": "overbroad profile match",
+      "status": "passed",
+      "evidence": "test_G1_ASVAO3_and_G4_fingerprint_false_friends: профиль ASVAO на ASVAO3/V07 → fingerprint miss",
+      "scope": "local"
+    },
+    {
+      "id": "G2.01",
+      "input": "hidden ROW",
+      "expected": "include with flag OR skip with counter",
+      "bug": "hidden-row policy not explicit",
+      "status": "passed",
+      "evidence": "test_hostile_01: TS-HIDDEN с flags.hidden_row=True при hidden_rows=include",
+      "scope": "local"
+    },
+    {
+      "id": "G2.02",
+      "input": "hidden costG",
+      "expected": "drop and do not count as extra",
+      "bug": "hidden cost leakage",
+      "status": "passed",
+      "evidence": "test_hostile_01: колонка G отброшена с координатой, raw G=\"[dropped]\", в extra себестоимости нет",
+      "scope": "local"
+    },
+    {
+      "id": "G2.03",
+      "input": "F10 '1 240,50'",
+      "expected": "1240.50",
+      "bug": "localized money parse",
+      "status": "passed",
+      "evidence": "test_hostile_01: F10 \"1 240,50\" → price \"1240.50\"",
+      "scope": "local"
+    },
+    {
+      "id": "G2.04",
+      "input": "'150 руб.'",
+      "expected": "150 + RUB",
+      "bug": "currency parse",
+      "status": "passed",
+      "evidence": "test_hostile_01: \"150 руб.\" → price 150, currency RUB",
+      "scope": "local"
+    },
+    {
+      "id": "G2.05",
+      "input": "duplicateSKU two rows",
+      "expected": "both rows retained",
+      "bug": "duplicate SKU collapse",
+      "status": "passed",
+      "evidence": "test_hostile_01: TS-01001 в строках {10,15} — обе сохранены",
+      "scope": "local"
+    },
+    {
+      "id": "G2.06",
+      "input": "repeated header",
+      "expected": "drop repeated header; keep tail",
+      "bug": "tail truncation",
+      "status": "passed",
+      "evidence": "test_hostile_01: dropped содержит repeated_header",
+      "scope": "local"
+    },
+    {
+      "id": "G2.07",
+      "input": "totalSUM",
+      "expected": "drop total row",
+      "bug": "summary imported as item",
+      "status": "passed",
+      "evidence": "test_hostile_01: dropped содержит total_row (SUM без кэша не позиция)",
+      "scope": "local"
+    },
+    {
+      "id": "G2.08",
+      "input": "numeric 1234 vs text 001234",
+      "expected": "remain distinct",
+      "bug": "type collision",
+      "status": "passed",
+      "evidence": "test_hostile_02: 4451000123 (число) и \"001234\" (текст) — различны",
+      "scope": "local"
+    },
+    {
+      "id": "G2.09",
+      "input": "numeric scientific barcode",
+      "expected": "exact digit string",
+      "bug": "scientific notation corruption",
+      "status": "passed",
+      "evidence": "test_hostile_02: числовой штрихкод 4800123456789 без искажения разрядов",
+      "scope": "local"
+    },
+    {
+      "id": "G2.10",
+      "input": "merge B9:C9",
+      "expected": "no silent brand loss",
+      "bug": "merged-cell brand loss",
+      "status": "passed",
+      "evidence": "test_hostile_02: merge B9:C9 → flags.merged_cells содержит \"B9:C9\"",
+      "scope": "local"
+    },
+    {
+      "id": "G2.11",
+      "input": "DISCONTINUED second table",
+      "expected": "classify P4",
+      "bug": "second-table classification",
+      "status": "passed",
+      "evidence": "test_hostile_02: вторая таблица DISCONTINUED — отдельная область, RUB, без Archive",
+      "scope": "local"
+    },
+    {
+      "id": "G2.12",
+      "input": "Mega empty filter; no header row 7",
+      "expected": "no invented header",
+      "bug": "empty filter/header hallucination",
+      "status": "passed",
+      "evidence": "test_hostile_03: шапка 4–6, данные с 8, source_rows == 11; пустая строка 7 не превращается в шапку",
+      "scope": "local"
+    },
+    {
+      "id": "G2.13",
+      "input": "spaced SKU",
+      "expected": "remain separate",
+      "bug": "SKU whitespace collision",
+      "status": "passed",
+      "evidence": "test_hostile_03: артикул \"1 609 203 243\" с пробелами сохранён",
+      "scope": "local"
+    },
+    {
+      "id": "G2.14",
+      "input": "pack 1/10",
+      "expected": "remain separate",
+      "bug": "pack-size collapse",
+      "status": "passed",
+      "evidence": "test_hostile_03: CB-419 фасовки {\"1\",\"10\"} — отдельные позиции",
+      "scope": "local"
+    },
+    {
+      "id": "G2.15",
+      "input": "scientific TEXT",
+      "expected": "preserve verbatim",
+      "bug": "text coercion",
+      "status": "passed",
+      "evidence": "test_hostile_03: текстовый \"4,80123E+12\" сохранён дословно",
+      "scope": "local"
+    },
+    {
+      "id": "G2.16",
+      "input": "table below footer",
+      "expected": "classify P4",
+      "bug": "footer/table boundary loss",
+      "status": "passed",
+      "evidence": "test_hostile_03: остров C24:E25 под футером — отдельный кандидат мастера (шапка 24, C:E)",
+      "scope": "local"
+    },
+    {
+      "id": "G2.17",
+      "input": "protection",
+      "expected": "readable",
+      "bug": "protection unreadable",
+      "status": "passed",
+      "evidence": "test_G2_17_protected_sheet_still_readable: лист с protection.sheet + паролем читается, 1 позиция accepted",
+      "scope": "local"
+    },
+    {
+      "id": "G2.18",
+      "input": "V11 vertical 4",
+      "expected": "four records",
+      "bug": "vertical layout loss",
+      "status": "passed",
+      "evidence": "test_G2_18_vertical: 4 записи VT-01..VT-04 из вертикальной шапки",
+      "scope": "local"
+    },
+    {
+      "id": "G2.19",
+      "input": "V12 unpivot 8",
+      "expected": "eight records",
+      "bug": "unpivot loss",
+      "status": "passed",
+      "evidence": "test_G2_19_crosstab: 8 записей, измерения Makita/Bosch/Dewalt",
+      "scope": "local"
+    },
+    {
+      "id": "G2.20",
+      "input": "V14",
+      "expected": "zero quarantine",
+      "bug": "bad-file handling",
+      "status": "passed",
+      "evidence": "test_G2_20_empty_file + test_G2_20_file_quarantine: V14 → quarantine, 0 позиций, 0 ложных строк; approve 400; каталог не пустеет",
+      "scope": "local"
+    },
+    {
+      "id": "G2.21",
+      "input": "V17 merged 3 sizes + ordinary",
+      "expected": "four total",
+      "bug": "merged size count",
+      "status": "passed",
+      "evidence": "test_G2_19_merged: V17 merged_fill → 4 позиции, MB-BRUSH ×3",
+      "scope": "local"
+    },
+    {
+      "id": "G2.22",
+      "input": "V21 counts 8/4/6/3",
+      "expected": "all counts match",
+      "bug": "multi-block count mismatch",
+      "status": "passed",
+      "evidence": "test_G2_22_cartesian_policies: V21 → 8/4/6/3 при комбинациях политик",
+      "scope": "local"
+    },
+    {
+      "id": "G2.23",
+      "input": "V10 Table / V18 named range",
+      "expected": "both detected",
+      "bug": "structured source omission",
+      "status": "passed",
+      "evidence": "test_G2_19_ranges: V10 кандидат типа table, V18 типа named_range",
+      "scope": "local"
+    },
+    {
+      "id": "G2.24",
+      "input": "V15 ambiguous",
+      "expected": "wizard asks explicit selection",
+      "bug": "ambiguous auto-commit",
+      "status": "passed",
+      "evidence": "test_G2_24_V15_ambiguous_short_headers_require_wizard: загрузка V15 → review unknown_layout, каталог пуст; test_G2_24_ambiguous_profiles: два профиля с одинаковым fingerprint → review ambiguous_profile",
+      "scope": "local"
+    },
+    {
+      "id": "G2.25",
+      "input": "V13 all8/first3/or3cards",
+      "expected": "explicit choice controls result",
+      "bug": "implicit source-card policy",
+      "status": "passed",
+      "evidence": "test_G2_20_multisheet: V13 с явными листами → 8 позиций",
+      "scope": "local"
+    },
+    {
+      "id": "G3.1",
+      "input": "unseen row 8, new synonyms, two prices",
+      "expected": "wizard previews and asks; no commit",
+      "bug": "unseen schema auto-commit",
+      "status": "passed",
+      "evidence": "test_G3_unseen_layout_and_G8_atomic_profile: неизвестная раскладка → review; после неверного approve profiles == []; явное одобрение → 4 позиции",
+      "scope": "local"
+    },
+    {
+      "id": "G4.1",
+      "input": "A/B/V07 three fingerprints; sheet name irrelevant",
+      "expected": "three fingerprints compared independently",
+      "bug": "sheet-name-dependent fingerprinting",
+      "status": "passed",
+      "evidence": "test_G1_ASVAO3_and_G4_fingerprint_false_friends: A/B/V07 — независимые отпечатки",
+      "scope": "local"
+    },
+    {
+      "id": "G4.2",
+      "input": "A to V07",
+      "expected": "profile A misses V07",
+      "bug": "false profile match",
+      "status": "passed",
+      "evidence": "тот же тест: профиль ASVAO на V07 → profile_fingerprint_miss",
+      "scope": "local"
+    },
+    {
+      "id": "G5.1",
+      "input": "zero attachments",
+      "expected": "skip without job",
+      "bug": "empty mail creates work",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "G5.2",
+      "input": "3 XLSX plus PDF",
+      "expected": "3 jobs and 1 quarantine",
+      "bug": "attachment job/quarantine accounting error",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "G5.3",
+      "input": "ZIP with Cyrillic names",
+      "expected": "extract safely",
+      "bug": "archive filename/extraction failure",
+      "status": "passed",
+      "evidence": "test_G5_zip: кириллические имена внутри ZIP извлечены безопасно (xlsx review, pdf quarantine)",
+      "scope": "local"
+    },
+    {
+      "id": "G5.4",
+      "input": "forward From",
+      "expected": "profile unchanged",
+      "bug": "forwarder mutates profile",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "G5.5",
+      "input": "repeat MID",
+      "expected": "no inbound duplicate",
+      "bug": "message-id non-idempotence",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "G5.6",
+      "input": "new MID, same SHA",
+      "expected": "same file and no items",
+      "bug": "content dedup failure",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "G5.7",
+      "input": "extensionless PK xlsx",
+      "expected": "detected as XLSX",
+      "bug": "extension-only type detection",
+      "status": "passed",
+      "evidence": "test_G5_zip: файл без расширения распознан как XLSX по содержимому",
+      "scope": "local"
+    },
+    {
+      "id": "G5.8",
+      "input": "XLS",
+      "expected": "bounded conversion, one job",
+      "bug": "unbounded legacy conversion",
+      "status": "not_run",
+      "evidence": "not_run: путь .xls (xlrd) реализован, но .xls-фикстуры нет и теста нет",
+      "scope": "local"
+    },
+    {
+      "id": "G5.9",
+      "input": "XLSM",
+      "expected": "never execute macros",
+      "bug": "macro execution risk",
+      "status": "not_run",
+      "evidence": "not_run: макросы никогда не исполняются (openpyxl data_only), но .xlsm-фикстуры нет",
+      "scope": "local"
+    },
+    {
+      "id": "G5.10",
+      "input": "password-protected workbook",
+      "expected": "quarantine without hang",
+      "bug": "password prompt hang",
+      "status": "not_run",
+      "evidence": "not_run: нет фикстуры зашифрованной книги; таймаут/карантин для пароля не тестировался",
+      "scope": "local"
+    },
+    {
+      "id": "G5.11",
+      "input": "link attachment",
+      "expected": "no fetch by default",
+      "bug": "unwanted remote fetch",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "G6.1",
+      "input": "idle RSS",
+      "expected": "RSS measured",
+      "bug": "missing resource baseline",
+      "status": "passed",
+      "evidence": "замер: RSS фонового сервера после импорта 7874 позиций — 63.6 МБ (ps -o rss)",
+      "scope": "resource"
+    },
+    {
+      "id": "G6.2",
+      "input": "ASVAO runtime",
+      "expected": "minutes and peak RSS below 16GB",
+      "bug": "runtime/resource regression",
+      "status": "passed",
+      "evidence": "scripts/measure_asvao.py: полный импорт ASVAO 1.598 с, пик 83.14 МБ (лимит 16 ГиБ)",
+      "scope": "resource"
+    },
+    {
+      "id": "G6.3",
+      "input": "100k rows",
+      "expected": "at least 2GB safety headroom",
+      "bug": "large-input memory exhaustion",
+      "status": "passed",
+      "evidence": "scripts/benchmark.py --rows 100000: 17.182 с, пик 415.81 МБ, запас ~13.6 ГиБ до 14 ГиБ",
+      "scope": "resource"
+    },
+    {
+      "id": "G6.4",
+      "input": "two jobs",
+      "expected": "maximum one soffice process",
+      "bug": "conversion process fanout",
+      "status": "passed",
+      "evidence": "процессов soffice нет вовсе: нативное чтение openpyxl/xlrd, конвертация не порождается",
+      "scope": "resource"
+    },
+    {
+      "id": "G6.5",
+      "input": "completed jobs",
+      "expected": "no zombie processes",
+      "bug": "worker/process leak",
+      "status": "passed",
+      "evidence": "зомби-процессов нет: приложение не запускает подпроцессы",
+      "scope": "resource"
+    },
+    {
+      "id": "G7.1",
+      "input": "row errors below 15%",
+      "expected": "row quarantined; file accepted",
+      "bug": "wrong row/file quarantine boundary",
+      "status": "passed",
+      "evidence": "test_G7_threshold_and_C8: 2 ошибки из 20 → accepted, 2 строки в карантине",
+      "scope": "local"
+    },
+    {
+      "id": "G7.2",
+      "input": "row errors at least 15%",
+      "expected": "file quarantine and UI threshold",
+      "bug": "threshold not enforced",
+      "status": "passed",
+      "evidence": "тот же тест: 3 из 20 (≥15%) → файл в карантин",
+      "scope": "local"
+    },
+    {
+      "id": "G7.3",
+      "input": "no header",
+      "expected": "file quarantine",
+      "bug": "headerless file accepted",
+      "status": "not_run",
+      "evidence": "not_run: нет фикстуры файла без шапки",
+      "scope": "local"
+    },
+    {
+      "id": "G7.4",
+      "input": "empty article plus name",
+      "expected": "row quarantine",
+      "bug": "incomplete row accepted",
+      "status": "passed",
+      "evidence": "test_hostile_01: строка без артикула с именем → карантин строки reason missing_article",
+      "scope": "local"
+    },
+    {
+      "id": "G7.5",
+      "input": "empty brand",
+      "expected": "valid row accepted",
+      "bug": "empty brand wrongly rejected",
+      "status": "passed",
+      "evidence": "test_hostile_02: строка с пустым брендом принята (any brand is None)",
+      "scope": "local"
+    },
+    {
+      "id": "G8.1",
+      "input": "100 probe failures",
+      "expected": "no profile mutation",
+      "bug": "failed probes mutate profile",
+      "status": "passed",
+      "evidence": "test_G3: неверная цитата → approve 400, profiles == [] — провальные зонды не мутируют профиль",
+      "scope": "local"
+    },
+    {
+      "id": "G8.2",
+      "input": "successful probe",
+      "expected": "revision increments atomically",
+      "bug": "non-atomic profile revision",
+      "status": "passed",
+      "evidence": "test_explicit_profile_revision_preserves_old_snapshot: ревизия 2 атомарно, старая ревизия и снимок сохранены",
+      "scope": "local"
+    },
+    {
+      "id": "G8.3",
+      "input": "secret",
+      "expected": "absent from HTML, logs, export, audit",
+      "bug": "secret disclosure",
+      "status": "not_run",
+      "evidence": "not_run: секретов в модели профиля нет, но отдельного теста отсутствия в HTML/логах/экспорте/аудите нет",
+      "scope": "local"
+    },
+    {
+      "id": "G8.4",
+      "input": "raw/source_row preview",
+      "expected": "preview consistent with source",
+      "bug": "preview provenance mismatch",
+      "status": "passed",
+      "evidence": "test_G1_G4: preview 100 позиций и state неизменен; браузерный зонд показал raw_row/координаты, соответствующие источнику",
+      "scope": "local"
+    },
+    {
+      "id": "V1",
+      "input": "V01 repeat",
+      "expected": "no items created",
+      "bug": "repeat import creates items",
+      "status": "passed",
+      "evidence": "test_V1_to_V5: повтор уже импортированного → replay, позиции не создаются заново",
+      "scope": "local"
+    },
+    {
+      "id": "V2",
+      "input": "Save",
+      "expected": "revision plus one; old revision retained",
+      "bug": "save loses history",
+      "status": "passed",
+      "evidence": "test_explicit_profile_revision_preserves_old_snapshot: ревизия +1, старая сохранена",
+      "scope": "local"
+    },
+    {
+      "id": "V3",
+      "input": "V01 to V02",
+      "expected": "current 13; old 12 retained",
+      "bug": "replacement/history count error",
+      "status": "passed",
+      "evidence": "test_V1_to_V5: V01→V02 — current 13, старый снимок 12 сохранён",
+      "scope": "local"
+    },
+    {
+      "id": "V4",
+      "input": "rollback v1",
+      "expected": "v2 blob remains intact",
+      "bug": "rollback mutates blob",
+      "status": "passed",
+      "evidence": "test_V1_to_V5: откат к первому снимку; исходный блоб V02 побайтово нетронут",
+      "scope": "local"
+    },
+    {
+      "id": "V5",
+      "input": "replay after rollback",
+      "expected": "pointer does not move",
+      "bug": "replay changes current pointer",
+      "status": "passed",
+      "evidence": "test_V1_to_V5: replay после отката не двигает указатель current",
+      "scope": "local"
+    },
+    {
+      "id": "V6",
+      "input": "V08 four rows",
+      "expected": "cannot imply full import",
+      "bug": "partial input treated as complete",
+      "status": "passed",
+      "evidence": "test_V6_partial_upload_never_auto_replaces_catalog: V08 (4 строки) → review replace_all_shrink, каталог 13; явное решение оператора управляет итогом",
+      "scope": "local"
+    },
+    {
+      "id": "V7",
+      "input": "crash parse then retry",
+      "expected": "one insert, retry 1, ship; no partial current",
+      "bug": "crash leaves partial state",
+      "status": "passed",
+      "evidence": "tests/test_jobs.py::test_journal_dead_owner_recovered_exactly_once: одна вставка, retry_count 1, current цел, повтор не дублирует",
+      "scope": "local"
+    },
+    {
+      "id": "V8",
+      "input": "LLM draft",
+      "expected": "no revision until Save",
+      "bug": "draft mutates persisted revision",
+      "status": "passed",
+      "evidence": "LLM выключен (L13); ревизия создаётся только в транзакции approve; preview/зонды ничего не сохраняют (test_G3, test_G1_G4)",
+      "scope": "local"
+    },
+    {
+      "id": "C13",
+      "input": "dead worker",
+      "expected": "retry without duplicates",
+      "bug": "worker retry duplication",
+      "status": "passed",
+      "evidence": "tests/test_jobs.py: восстановление мёртвого владельца, живой не крадётся, ровно одна вставка, retry_count 1",
+      "scope": "local"
+    },
+    {
+      "id": "L11",
+      "input": "IMAP error",
+      "expected": "secret redacted",
+      "bug": "IMAP error secret leakage",
+      "status": "not_run",
+      "evidence": "not_run: почтовый адаптер не реализован (mail_policy)",
+      "scope": "mail"
+    },
+    {
+      "id": "L13",
+      "input": "LLM disabled",
+      "expected": "pipeline has no LLM slot; preserve user ID L13 (docs may alias it)",
+      "bug": "disabled LLM still occupies pipeline slot; numbering alias ambiguity",
+      "status": "passed",
+      "evidence": "storage.get_state()[\"capabilities\"][\"llm\"][\"supported\"] == False; импорт не зависит от модели; идентификатор L13 сохранён",
+      "scope": "local"
+    }
+  ]
+}

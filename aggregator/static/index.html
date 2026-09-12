@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Локальный агрегатор прайс-листов: проверка исходных данных, настройка форматов и история поставок.">
+  <title>Свод — прайс-листы</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Перейти к содержимому</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Навигация приложения">
+      <a class="brand" href="#inbox" aria-label="Свод — входящие файлы"><span class="brand-mark" aria-hidden="true">с.</span><span>Свод<span class="brand-caption">ПРАЙС-ЛИСТЫ</span></span></a>
+      <p class="sidebar-caption">РАБОЧЕЕ ПРОСТРАНСТВО</p>
+      <nav class="primary-nav" aria-label="Разделы">
+        <a href="#inbox" data-view="inbox" aria-current="page"><span class="nav-number" aria-hidden="true">01</span>Входящие<span id="review-count" class="nav-count" hidden></span></a>
+        <a href="#catalog" data-view="catalog"><span class="nav-number" aria-hidden="true">02</span>Каталог</a>
+        <a href="#shipments" data-view="shipments"><span class="nav-number" aria-hidden="true">03</span>История поставок</a>
+        <a href="#profiles" data-view="profiles"><span class="nav-number" aria-hidden="true">04</span>Профили форматов</a>
+        <a href="#system" data-view="system"><span class="nav-number" aria-hidden="true">05</span>Система и аудит</a>
+      </nav>
+      <div class="sidebar-note"><span class="local-dot" aria-hidden="true"></span><div><strong>Локальная обработка</strong><p>Исходники сохраняются.<br>Решения остаются в истории.</p></div></div>
+      <div class="sidebar-footer">Один каталог.<br>Разные форматы.</div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar"><p class="breadcrumb">Рабочее пространство <span aria-hidden="true">/</span> <span id="breadcrumb-current">Входящие</span></p><div class="topbar-actions"><span id="connection-status" class="connection" role="status">Подключение…</span><button id="refresh-state" class="button button-quiet" type="button">Обновить</button></div></header>
+      <main id="main-content" tabindex="-1">
+        <div class="page-heading"><div><p id="page-eyebrow" class="eyebrow">01 / ПРИЁМ И ПРОВЕРКА</p><h1 id="page-title">Входящие прайс-листы</h1><p id="page-description" class="page-description">От исходного файла к проверенному каталогу. Новый формат всегда проходит через настройку.</p></div><span id="state-updated" class="muted small"></span></div>
+        <div id="global-message" class="notice" role="status" aria-live="polite" hidden></div>
+        <section id="view-inbox" class="view" aria-label="Приём и настройка файлов">
+          <form id="upload-form" class="upload-strip" enctype="multipart/form-data">
+            <div class="upload-copy"><span class="eyebrow">ДОБАВИТЬ ФАЙЛЫ</span><h2>Начните с оригинала</h2><p class="muted">Несколько файлов за один раз. Совпадение формата проверяет сервер.</p></div>
+            <label class="field upload-source"><span>Источник / поставщик</span><input id="upload-source" name="source" type="text" list="source-names" placeholder="Например, поставщик Север" autocomplete="off"><span class="field-hint">Необязательно при загрузке; задаётся в профиле.</span></label>
+            <label class="field upload-files"><span>Файлы прайс-листов</span><input id="upload-files" name="files" type="file" multiple required><span id="selected-files-label" class="field-hint">Оригиналы не изменяются.</span></label>
+            <button id="upload-button" class="button button-primary" type="submit">Загрузить</button>
+          </form>
+          <div id="upload-results" aria-live="polite"></div>
+          <div class="inbox-layout">
+            <section class="file-rail" aria-labelledby="files-heading"><div class="section-heading"><h2 id="files-heading">Файлы</h2><span id="files-count" class="count-label">—</span></div><label class="field filter-field"><span class="sr-only">Найти файл</span><input id="file-search" type="search" placeholder="Название или источник"></label><label class="field filter-field"><span class="sr-only">Статус файла</span><select id="file-status"><option value="">Все статусы</option></select></label><div id="file-list" class="file-list"><p class="empty">Загружаем список файлов…</p></div></section>
+            <section id="file-workspace" class="file-workspace" aria-label="Настройка выбранного файла"><div class="welcome-state"><span class="large-index" aria-hidden="true">01—03</span><h2>Каждый столбец<br>на своём месте.</h2><p>Загрузите файл или выберите его слева. Посмотрите оригинал, настройте таблицы и проверьте первые 100 строк до активации.</p><ol class="workflow-list"><li>Исходник и границы таблиц</li><li>Поля и правила обработки</li><li>Предпросмотр и подтверждение</li></ol></div></section>
+          </div>
+        </section>
+        <section id="view-catalog" class="view" aria-label="Текущий каталог" hidden><form id="catalog-filter" class="toolbar"><label class="field"><span>Источник</span><select id="catalog-source"><option value="">Все источники</option></select></label><label class="field grow"><span>Поиск по каталогу</span><input id="catalog-query" type="search" placeholder="Артикул или название"></label><button class="button button-primary" type="submit">Найти</button></form><p class="section-note">Только текущие активированные снимки. Карантинные поставки не заменяют каталог.</p><div id="catalog-results"></div></section>
+        <section id="view-shipments" class="view" aria-label="История поставок" hidden><div class="toolbar"><label class="field"><span>Источник</span><select id="shipment-source"><option value="">Все источники</option></select></label><p class="muted grow">Снимки неизменяемы. Возврат к прошлой поставке записывается в аудит.</p></div><div id="shipment-list"></div><section id="shipment-detail" class="detail-section" aria-label="Детали поставки" hidden></section></section>
+        <section id="view-profiles" class="view" aria-label="История профилей" hidden><p class="section-note">Каждое подтверждение создаёт новую ревизию. Старые настройки и связанные с ними поставки остаются доступны.</p><div id="profile-list"></div><section id="profile-detail" class="detail-section" aria-label="Ревизия профиля" hidden></section></section>
+        <section id="view-system" class="view" aria-label="Возможности системы и журнал" hidden><div class="system-grid"><section class="panel"><div class="section-heading"><h2>Состояние сервиса</h2><span id="health-status" class="badge">Не проверено</span></div><div id="system-settings"></div></section><section class="panel"><div class="section-heading"><h2>Модули и адаптеры</h2><span class="small muted">По данным сервера</span></div><p class="section-note">Недоступные модули не участвуют в обработке. Здесь нет переключателей, имитирующих подключение.</p><div id="system-capabilities"></div></section></div><section class="panel"><div class="section-heading"><h2>Стратегии P1–P11</h2><span class="small muted">Поддержка и ограничения</span></div><div id="system-policies"></div></section><section class="panel"><div class="section-heading"><h2>Метрики</h2><a class="text-link" href="/metrics" target="_blank" rel="noopener">Открыть исходный ответ</a></div><pre id="metrics-content" class="code-block">Метрики ещё не запрошены.</pre></section><section class="panel"><div class="section-heading"><h2>Журнал действий</h2><button id="refresh-audit" class="button button-secondary" type="button">Обновить журнал</button></div><div id="audit-content"></div></section><section class="panel"><div class="section-heading"><h2>Журнал заданий</h2><button id="refresh-jobs" class="button button-secondary" type="button">Обновить</button></div><p class="section-note">Явные импорты из мастера и повторные разборы. Прерванное задание восстанавливается при следующем запуске сервера.</p><div id="jobs-content"></div></section></section>
+      </main>
+      <footer class="page-footer"><span>Свод / локальный агрегатор</span><span>Проверяемые данные, явные решения.</span></footer>
+    </div>
+  </div>
+  <datalist id="source-names"></datalist>
+  <datalist id="currency-values"><option value="RUB"></option><option value="USD"></option><option value="EUR"></option><option value="CNY"></option><option value="KZT"></option><option value="BYN"></option></datalist>
+  <datalist id="price-kinds"><option value="retail"></option><option value="wholesale"></option><option value="purchase"></option><option value="recommended"></option><option value="unknown"></option></datalist>
+  <noscript><div class="noscript">Для загрузки и настройки прайс-листов необходимо разрешить JavaScript. Все скрипты загружаются локально.</div></noscript>
+</body>
+</html>

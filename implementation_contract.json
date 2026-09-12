@@ -1,0 +1,31 @@
+{
+  "package": "aggregator",
+  "runtime": "uv-managed Python 3.12.14 в .venv (uv sync --group dev); системный /usr/bin/python3 (3.9.6) НЕ используется и не поддерживается — код использует синтаксис 3.10+ (X | Y); зависимости: FastAPI, uvicorn, python-multipart, openpyxl, xlrd, PyYAML из pyproject.toml/uv.lock; stdlib sqlite3 local transactional store; browser vanilla JS",
+  "parser_api": {
+    "inspect_file(path)": "JSON dict {format, sheets:[{name, rows, cols, preview:[{row,cells:[{col,value,coordinate,hidden,formula}]}], candidates:[tableSpec], fingerprint}], warnings:[]}; unknown formats/encryption raise ValueError with safe reason. Candidate is suggestion, never automatic profile creation.",
+    "parse_file(path, profile, limit=None)": "JSON dict {items:[], quarantine:[], dropped:[], counts:{source_rows,accepted_rows,quarantined_rows,dropped_rows,items}, status:accepted|quarantine, reason:null|string}. Monetary values decimal strings, no NaN. limit limits source data rows globally, not output items.",
+    "fingerprint(path, profile)": "str stable SHA256 of approved sheet/table header geometry/values, merge shape excluding filename/sheet name and variable data length. Different A/B/V07 distinct. Missing header raises ValueError. Profile data_start/end bounds not count fingerprint.",
+    "profile": "{name,source,ingest_mode:replace_all|append|delta, policies:{hidden_rows:include|skip|quarantine,negative_price:accept|quarantine,empty_price:accept|quarantine,multiple_prices:items|extra,hidden_cost:drop|quarantine,merged_fill:true|false,quarantine_threshold:0.15},tables:[{sheet:string,header_start:int,header_end:int,data_start:int,data_end:int|null,start_col:int,end_col:int,orientation:rows|vertical|crosstab,columns:[{col:int,target:article|name|brand|qty|price|barcode|oem|pack|currency|availability|extra.NAME|drop,quote:string,price_kind:unknown|string,currency:string,reason:string}],currency:string}],delta:{key_fields:[string],operation_field:string}}"
+  },
+  "web_api": {
+    "GET /api/state": "{files:[],profiles:[],shipments:[],sources:[],settings:{},capabilities:{}}",
+    "POST /api/upload": "multipart files, source optional; returns {results:[{file_id,status,reason,shipment_id?}]} auto-parse only exact one approved matching fingerprint, otherwise review; dedup does not activate current",
+    "GET /api/files/{id}": "{file:object,inspection:inspect_file result,profile:matching profile or null}",
+    "POST /api/files/{id}/preview": "JSON profile object; parse first 100 source rows, return parse result plus fingerprint; no writes to profiles/shipments",
+    "POST /api/files/{id}/approve": "JSON profile object; preview validation then complete parse BEFORE atomic profile revision+shipment+current; failed dry run no revision. Explicit ingest_mode required. Return parse counts/status/profile_id/shipment_id",
+    "POST /api/files/{id}/reprocess": "JSON {profile_id}; creates new immutable shipment only through explicit action, increments processing generation",
+    "GET /api/shipments/{id}": "{shipment,items,quarantine,dropped}; ?offset=&limit=100 pagination",
+    "POST /api/shipments/{id}/activate": "JSON {reason}; rollback/current pointer only, audit",
+    "GET /api/catalog": "?source=&q=&offset=&limit=100 returns {items,total}; reads current immutable snapshots",
+    "GET /api/profiles/{id}": "profile revision and JSON body",
+    "GET /api/files/{id}/raw": "download original bytes",
+    "GET /api/audit": "bounded recent audit events",
+    "GET /api/jobs": "{jobs:[{id,file_id,state,owner_pid,attempts,result,error,created_at,updated_at}]} — долговечный журнал явных импортов; ретрай того же задания повторяет сохранённый payload, исправление входа = новое задание",
+    "GET /api/profiles/{id}/yaml?revision=": "YAML-дамп точной ревизии профиля (body + id + revision), Content-Disposition attachment",
+    "GET /metrics": "Prometheus counters/gauges no secret/high-cardinality labels",
+    "GET /health": "{status:ok}"
+  },
+  "ownership": {"parser":"aggregator/engine.py, aggregator/formats.py, aggregator/plugins.py, tests/test_engine.py", "backend":"aggregator/app.py, aggregator/storage.py, aggregator/__init__.py, aggregator/__main__.py, pyproject.toml, tests/test_storage.py", "ui":"aggregator/static/index.html, aggregator/static/app.js, aggregator/static/style.css", "integration":"Main owns cross-module integration, acceptance test runs, existing documentation updates"},
+  "security": "Bind loopback default; no remote URL fetching; cap upload/decompressed bytes/cells; no macro execution; local JS only; no innerHTML from workbook data; immutable raw CAS; no filename paths; profile evidence quotes validated; unsupported modules clearly shown disabled rather than fake implementations",
+  "workflow": "All worker agents skip formatter/linter/build/test execution during concurrent edits. Do not edit fixtures, manifests, generators or .omp. No new documentation files; Main updates existing doc. Tell peers before changing contract. Actual behaviors, no placeholders or fake noops."
+}

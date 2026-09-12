@@ -1,0 +1,124 @@
+{
+  "files": [
+    {
+      "id": "V22",
+      "basename": "V22_комбо_P3_две_цены_×_P4_остров.xlsx",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V22_комбо_P3_две_цены_×_P4_остров.xlsx",
+      "axis": "P3×P4",
+      "expected_items": {
+        "P4_ignore_P3_N": 8,
+        "P4_ignore_P3_extra": 4,
+        "P4_second_P3_N_plus_B": "8 + 2 (B has 1 price)",
+        "P4_quarantine_file": 0
+      },
+      "quotes": {
+        "A2": "PQ-01",
+        "C2": 180,
+        "D2": 270,
+        "A9": "Код",
+        "A10": "PQ-B1"
+      }
+    },
+    {
+      "id": "V23",
+      "basename": "V23_прайс_cp1251_точка_с_запятой.csv",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V23_прайс_cp1251_точка_с_запятой.csv",
+      "axis": "csv cp1251 delimiter=; decimal comma; semicolon inside name",
+      "quotes": {
+        "encoding": "cp1251",
+        "A2": "CS-01",
+        "name_has_semi": "Щетка; угольная"
+      },
+      "expected_items": 3
+    },
+    {
+      "id": "V24",
+      "basename": "V24_архив_кириллица.zip",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V24_архив_кириллица.zip",
+      "axis": "zip + кириллица в имени вложения",
+      "quotes": {
+        "arcname": "прайс поставщика №17.xlsx",
+        "A2": "ZP-01"
+      },
+      "expected_items": 2
+    },
+    {
+      "id": "V26",
+      "basename": "V26_синоним_Прайс_не_Цена_fingerprint_miss.xlsx",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V26_синоним_Прайс_не_Цена_fingerprint_miss.xlsx",
+      "axis": "синоним заголовка: похож на F_EX, header_hash другой → master, не тихий F_EX YAML",
+      "quotes": {
+        "E1": "Прайс",
+        "A2": "EX-001",
+        "must_not": "apply V01 map blindly"
+      },
+      "expected": "unknown/ambiguous, not F_EX hit"
+    },
+    {
+      "id": "V27",
+      "basename": "V27_артикул_формула_без_кэша.xlsx",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V27_артикул_формула_без_кэша.xlsx",
+      "axis": "article=formula, openpyxl data_only → None без LibreOffice recalc",
+      "quotes": {
+        "B2": "=A2&\"-\"&TEXT(1,\"000\")",
+        "cached": false
+      },
+      "expected": "quarantine article empty XOR recalc then EX-001…"
+    },
+    {
+      "id": "V29",
+      "basename": "V29_данные_в_xlsm.xlsm",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V29_данные_в_xlsm.xlsm",
+      "axis": "xlsm: читать данные, макросы не исполнять (макросов нет — всё равно путь FileNormalize)",
+      "quotes": {
+        "A2": "XL-01"
+      },
+      "expected_items": 3
+    },
+    {
+      "id": "V30",
+      "basename": "V30_excel_xml_2003.xml",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V30_excel_xml_2003.xml",
+      "axis": "XML Spreadsheet 2003",
+      "quotes": {
+        "A2": "XM-01"
+      },
+      "expected_items": 2
+    },
+    {
+      "id": "V31",
+      "basename": "V31_html_table.xls",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V31_html_table.xls",
+      "axis": "HTML table saved as .xls (1С-стиль)",
+      "quotes": {
+        "magic": "html not BIFF",
+        "A2": "HT-01"
+      },
+      "expected_items": 3
+    },
+    {
+      "id": "V25",
+      "basename": "V25_без_расширения",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V25_без_расширения",
+      "axis": "файл без расширения, сигнатура PK zip xlsx, sha256 = V01",
+      "quotes": {
+        "copy_of": "V01_FEX_полный_v1.xlsx",
+        "magic": "PK"
+      },
+      "expected": "same fingerprint F_EX as V01; replay hash vs V01 if same bytes"
+    },
+    {
+      "id": "V32",
+      "basename": "V32_BIFF97.xls",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V32_BIFF97.xls",
+      "axis": "Excel 97-2003 BIFF .xls via LibreOffice",
+      "soffice_rc": 0,
+      "expected": "FileNormalize .xls→xlsx then F_EX fingerprint"
+    },
+    {
+      "id": "V27_recalc_note",
+      "soffice_rc": 0,
+      "log_tail": "rs/sdd/pricelists_fixtures/variants/V27_артикул_формула_без_кэша.xlsx using filter : Calc Office Open XML\nOverwriting: /Users/sdd/pricelists_fixtures/variants/V27_артикул_формула_без_кэша.xlsx\nError: Please verify input parameters... (SfxBaseModel::impl_store <file:///Users/sdd/pricelists_fixtures/variants/V27_%D0%B0%D1%80%D1%82%D0%B8%D0%BA%D1%83%D0%BB_%D1%84%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%B1%D0%B5%D0%B7_%D0%BA%D1%8D%D1%88%D0%B0.xlsx> failed: 0x4c0c(Error Area:Sfx Class:Write Code:12))\n"
+    }
+  ]
+}

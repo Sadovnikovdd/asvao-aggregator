@@ -1,0 +1,407 @@
+{
+  "purpose": "Каждый файл = одна главная развилка исполнения. Не сваливать все ошибки в один прайс.",
+  "how_to_use": [
+    "V01→V02→V08 гонять одной цепочкой source=F_EX: fingerprint hit, разные ship.",
+    "Ожидания expected_items зависят от выбранных P*; пока P* не выбраны — два числа не ошибка манифеста.",
+    "YAML без цитаты quotes.* = брак.",
+    "Не использовать max_row как count."
+  ],
+  "execution_matrix": {
+    "autonomy_known_fingerprint": [
+      "V01",
+      "V02",
+      "V08"
+    ],
+    "versioning_V_ship": [
+      "V01",
+      "V02"
+    ],
+    "delta_vs_full_P7": [
+      "V08 after V01 or V02"
+    ],
+    "P3_two_prices": [
+      "V03"
+    ],
+    "P1_hidden_row": [
+      "V04"
+    ],
+    "P4_second_table": [
+      "V05"
+    ],
+    "P2_P5_C1_C5_C8_types": [
+      "V06"
+    ],
+    "G4_TDSheet_false_friend": [
+      "V07 vs ASVAO/ASVAO3"
+    ],
+    "C3_packaging": [
+      "V09"
+    ],
+    "UNIQUE_article_forbidden_by": [
+      "V06 C1",
+      "V09 C3",
+      "V03 if N items"
+    ]
+  },
+  "fingerprint_groups": {
+    "F_EX": [
+      "V01",
+      "V02",
+      "V08"
+    ],
+    "F_TWO_PRICE": [
+      "V03"
+    ],
+    "F_HIDDEN": [
+      "V04"
+    ],
+    "F_ISLANDS": [
+      "V05"
+    ],
+    "F_HOSTILE_VAL": [
+      "V06"
+    ],
+    "F_TRAP_TDSHEET": [
+      "V07"
+    ],
+    "F_PACK": [
+      "V09"
+    ]
+  },
+  "files": [
+    {
+      "id": "V01",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V01_FEX_полный_v1.xlsx",
+      "basename": "V01_FEX_полный_v1.xlsx",
+      "family": "F_EX",
+      "primary_fork": "baseline_autonomy",
+      "fingerprint": {
+        "header_row": 1,
+        "headers": [
+          "Артикул",
+          "Наименование",
+          "Бренд",
+          "Остаток",
+          "Цена"
+        ],
+        "col_offset": "A",
+        "n_cols": 5,
+        "sheet_must_not_be_key": true
+      },
+      "layout": "шапка row1 A:E, данные row2–13, валюта только в футере",
+      "counts": {
+        "data_rows_with_article_and_price": 12,
+        "max_row_is_not_count": true
+      },
+      "expected_items": {
+        "default": 12
+      },
+      "forces": [
+        "G10 autonomy after profile",
+        "V_ship first current",
+        "G1 counts≠max_row"
+      ],
+      "not_in_this_file": [
+        "hidden",
+        "2 prices",
+        "2 tables",
+        "TDSheet"
+      ],
+      "quotes": {
+        "article": "A2='EX-001'",
+        "name": "B2='Щетка угольная 6.5x7.5x13'",
+        "brand": "C2='Makita'",
+        "qty": "D2=20 int",
+        "price": "E2=180 int",
+        "currency": "footer text, not a column"
+      }
+    },
+    {
+      "id": "V02",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V02_FEX_полный_v2.xlsx",
+      "basename": "V02_FEX_полный_v2.xlsx",
+      "family": "F_EX",
+      "primary_fork": "V_ship replace_all vs append vs diff",
+      "fingerprint": "IDENTICAL to V01 (F_EX). profile_rev may stay; ship_n+1",
+      "delta_from_V01": {
+        "removed": [
+          "EX-003"
+        ],
+        "added": [
+          "EX-013",
+          "EX-014"
+        ],
+        "price_changed": {
+          "EX-001": [
+            180,
+            150
+          ],
+          "EX-005": [
+            95,
+            110
+          ]
+        },
+        "qty_changed": {
+          "EX-005": [
+            40,
+            12
+          ]
+        }
+      },
+      "counts": {
+        "data_rows_with_article_and_price": 13
+      },
+      "expected_items": {
+        "default": 13
+      },
+      "expected_after_pair_V01_then_V02": {
+        "replace_all_current": 13,
+        "replace_all_old_shipment_still_readable": 12,
+        "append_if_P7_head": 25,
+        "diff_logical": {
+          "removed": 1,
+          "added": 2,
+          "changed": 2,
+          "unchanged": 9
+        }
+      },
+      "forces": [
+        "V3 reprocess/new ship",
+        "C9 rollback",
+        "P7",
+        "G10 0 clicks"
+      ],
+      "quotes": {
+        "article": "A2='EX-001'",
+        "price_v2": "E2=150"
+      }
+    },
+    {
+      "id": "V08",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V08_FEX_дельта_4строки.xlsx",
+      "basename": "V08_FEX_дельта_4строки.xlsx",
+      "family": "F_EX",
+      "primary_fork": "delta vs full — ingest_mode must not guess",
+      "fingerprint": "IDENTICAL to V01/V02 (F_EX)",
+      "counts": {
+        "data_rows_with_article_and_price": 4
+      },
+      "expected_items": {
+        "if_treated_as_full_replace": 4,
+        "if_treated_as_delta_on_V02": "patch 4 SKUs, catalog remains ~13"
+      },
+      "forces": [
+        "source.ingest_mode explicit",
+        "diff mode",
+        "false replace_all would wipe catalog to 4 — regression"
+      ],
+      "quotes": {
+        "A2": "EX-001",
+        "E2": 170
+      }
+    },
+    {
+      "id": "V03",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V03_две_цены_в_строке.xlsx",
+      "basename": "V03_две_цены_в_строке.xlsx",
+      "family": "F_TWO_PRICE",
+      "primary_fork": "P3",
+      "quotes": {
+        "article": "A2='TP-01'",
+        "name": "B2='Щетка CB-419'",
+        "price_opt": "C2=180",
+        "price_rrc": "D2=270",
+        "qty": "E2=10"
+      },
+      "counts": {
+        "data_rows": 8
+      },
+      "expected_items": {
+        "P3_N_items_price_type": 16,
+        "P3_one_item_extra_prices": 8
+      },
+      "unique_key": {
+        "if_N_items": "(shipment_id, table_idx, source_row, price_type)",
+        "if_extra_prices": "(shipment_id, table_idx, source_row)"
+      },
+      "forces": [
+        "P3",
+        "L5 after P3",
+        "не UNIQUE(article)"
+      ]
+    },
+    {
+      "id": "V04",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V04_скрытая_живая_строка.xlsx",
+      "basename": "V04_скрытая_живая_строка.xlsx",
+      "family": "F_HIDDEN",
+      "primary_fork": "P1 (и НЕ P6: скрытая F=note)",
+      "quotes": {
+        "header_row": 4,
+        "data_start": 5,
+        "article": "A5='HD-01'",
+        "hidden_sku": "A8='HD-HIDDEN'",
+        "hidden_col": "F note_internal, not cost"
+      },
+      "notes": {
+        "hidden_row": 8,
+        "hidden_col": "F"
+      },
+      "counts": {
+        "visible_with_article_price": 7,
+        "hidden_live": 1
+      },
+      "expected_items": {
+        "P1_item_plus_flag": 8,
+        "P1_skip_hidden": 7
+      },
+      "forces": [
+        "P1",
+        "P6 does not apply — drop vs extra is for COST, this is note: extra XOR drop"
+      ],
+      "policy_note": "F либо extra либо drop; не путать с P6 себест ТехСнаб G"
+    },
+    {
+      "id": "V05",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V05_два_острова_разные_колонки.xlsx",
+      "basename": "V05_два_острова_разные_колонки.xlsx",
+      "family": "F_ISLANDS",
+      "primary_fork": "P4",
+      "quotes": {
+        "A_header": "A3='sku' B3='name' C3='price_rub' D3='stock'",
+        "A_first": "A4='IA-01'",
+        "B_header": "A11='Код' B11='Товар' C11='ЦенаОпт'",
+        "B_first": "A12='IB-99'"
+      },
+      "counts": {
+        "island_A": 5,
+        "island_B": 3
+      },
+      "expected_items": {
+        "P4_second_parse": {
+          "tables": 2,
+          "items": 8
+        },
+        "P4_ignore_second": {
+          "tables": 1,
+          "items": 5
+        },
+        "P4_quarantine_file": {
+          "items": 0,
+          "file_status": "quarantine"
+        }
+      },
+      "forces": [
+        "P4",
+        "C14 two master cards",
+        "L12",
+        "bait sheet Прайс_копия"
+      ]
+    },
+    {
+      "id": "V06",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V06_грязные_значения_P2P5C1C8.xlsx",
+      "basename": "V06_грязные_значения_P2P5C1C8.xlsx",
+      "family": "F_HOSTILE_VAL",
+      "primary_fork": "P2 P5 C1 C5 C8 types",
+      "quotes": {
+        "A2": "HV-01",
+        "D3": -15,
+        "D4": null,
+        "A5": "HV-01 duplicate",
+        "A7B7": "both empty",
+        "D8": "'1 250,00' str",
+        "E8": "4800123456789 scientific",
+        "A9": "1234 int",
+        "D11": "='=SUM(D2:D10)' not an item"
+      },
+      "rows": {
+        "2": "valid HV-01",
+        "3": "neg price P2",
+        "4": "empty price P5, qty text",
+        "5": "dup SKU C1",
+        "6": "no article, has name — valid if rule article|name",
+        "7": "no article no name C8 quarantine",
+        "8": "text price + sci barcode",
+        "9": "int sku",
+        "10": "empty",
+        "11": "TOTAL C5"
+      },
+      "expected_items": {
+        "valid_always": [
+          "HV-01 x2 as two items C1",
+          "row6 nameless-sku"
+        ],
+        "P2_as_item": "include HV-02",
+        "P2_quarantine": "HV-02 not in items",
+        "P5_as_null": "include HV-03 price NULL",
+        "P5_quarantine": "HV-03 out",
+        "C8": "row7 quarantine",
+        "C5": "row11 not item",
+        "never_use_max_row": true
+      },
+      "forces": [
+        "P2",
+        "P5",
+        "C1",
+        "C5",
+        "C8",
+        "L9 barcode/article text"
+      ]
+    },
+    {
+      "id": "V07",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V07_TDSheet_ловушка_не_ASVAO.xlsx",
+      "basename": "V07_TDSheet_ловушка_не_ASVAO.xlsx",
+      "family": "F_TRAP_TDSHEET",
+      "primary_fork": "G4 fingerprint без имени листа",
+      "quotes": {
+        "sheet": "TDSheet — КАК у ASVAO, формат ДРУГОЙ",
+        "C2": "rub",
+        "header_row": 8,
+        "headers": "C Код D Номенклатура E Наличие F Цена руб",
+        "autofilter": "C9:F9 EMPTY",
+        "first": "C10='TR-100'",
+        "spaced_sku": "C12='1 609 203 243' vs C13='1609203243'"
+      },
+      "counts": {
+        "data_rows_with_code_and_price": 5
+      },
+      "expected_items": {
+        "default": 5,
+        "C2_two_spellings": "2 items phase1"
+      },
+      "forces": [
+        "G4 vs ASVAO/ASVAO3",
+        "запрет sheet=TDSheet в ядре",
+        "autofilter на пустой строке ≠ header",
+        "col_offset C not A",
+        "C2 two article spellings"
+      ],
+      "must_not": "apply ASVAO YAML (A=бренд B=артикул) — would swap fields"
+    },
+    {
+      "id": "V09",
+      "file": "/Users/sdd/pricelists_fixtures/variants/V09_один_SKU_две_фасовки.xlsx",
+      "basename": "V09_один_SKU_две_фасовки.xlsx",
+      "family": "F_PACK",
+      "primary_fork": "C3 multiplicity",
+      "quotes": {
+        "A2": "CB-419 C2=1 D2=180",
+        "A3": "CB-419 C3=10 D3=1600"
+      },
+      "counts": {
+        "data_rows": 5,
+        "unique_articles": 3
+      },
+      "expected_items": {
+        "default": 5,
+        "if_wrong_unique_article": 3
+      },
+      "forces": [
+        "C3",
+        "UNIQUE(article) kills this"
+      ]
+    }
+  ]
+}

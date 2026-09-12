@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "basedpyright": {
+      "command": "basedpyright-langserver",
+      "args": ["--stdio"],
+      "fileTypes": [".py", ".pyi"],
+      "rootMarkers": [".omp", "pyproject.toml", "pyrightconfig.json", "setup.cfg", ".git"]
+    },
+    "ruff": {
+      "command": "ruff",
+      "args": ["server"],
+      "fileTypes": [".py", ".pyi"],
+      "rootMarkers": [".omp", "pyproject.toml", "ruff.toml", ".ruff.toml", "setup.cfg", ".git"],
+      "isLinter": true
+    }
+  }
+}
